@@ -2,7 +2,7 @@ var db = require('../database')
 
 // get the queries ready - note the ? placeholders
 var insertUser = db.prepare(
-  'INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)'
+  'INSERT INTO user (id, name, email, password_hash) VALUES (?, ?, ?, ?)'
 )
 
 var selectUserById = db.prepare('SELECT * FROM user WHERE id = ?')
