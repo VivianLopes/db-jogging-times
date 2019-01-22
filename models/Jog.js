@@ -2,16 +2,16 @@ var db = require('../database')
 
 // get the queries ready - note the ? placeholders
 var insertJog = db.prepare(
-    'INSERT INTO jog (userId, startTime, date, distance, duration) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO jog (user_id, start_time, date, distance, duration) VALUES (?, ?, ?, ?, ?)'
 )
 
 var selectJogById = db.prepare('SELECT * FROM jog WHERE id = ?')
-var selectJogByUser = db.prepare('SELECT * FROM jog WHERE userId = ?')
+var selectJogByUser = db.prepare('SELECT * FROM jog WHERE user_id = ?')
 
 class Jog {
-    static insert(userId, startTime, date, distance, duration) {
+    static insert(user_id, start_time, date, distance, duration) {
         // run the insert query
-        var info = insertJog.run(userId, startTime, date, distance, duration)
+        var info = insertJog.run(user_id, start_time, date, distance, duration)
 
         // check what the newly inserted row id is
         var jogId = info.lastInsertRowid
@@ -29,8 +29,8 @@ class Jog {
         }
     }
 
-    static findByUser(userId) {
-        var row = selectJogByUser.get(userId)
+    static findByUser(user_id) {
+        var row = selectJogByUser.get(user_id)
 
         if (row) {
             return new Jog(row)
@@ -39,10 +39,16 @@ class Jog {
         }
     }
 
+    static findAllFromUser(user_id){
+        var allJogs = selectJogByUser.all(user_id)
+        return allJogs
+
+    }
+
     constructor(databaseRow) {
-        this.userId = databaseRow.userId
+        this.user_id = databaseRow.user_id
         this.id = databaseRow.id
-        this.startTime = databaseRow.startTime
+        this.start_time = databaseRow.start_time
         this.date = databaseRow.date
         this.distance = databaseRow.distance
         this.duration = databaseRow.duration

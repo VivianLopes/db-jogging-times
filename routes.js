@@ -103,10 +103,19 @@ routes.get('/sign-out', function(req, res) {
 routes.get('/times', function(req, res) {
   var loggedInUser = User.findById(req.cookies.userId)
 
-  // fake stats - TODO: get real stats from the database
-  var totalDistance = 13.45
-  var avgSpeed = 5.42
-  var totalTime = 8.12322
+    const addAll = (accumulator, currentValue) => accumulator + currentValue;
+
+  // fake stats - TODO: get real stats from the database->DONE(?)
+  var totalDistance = (Jog.findAllFromUser(req.cookies.userId)).map(jog => {
+      return jog.distance })
+            .reduce(addAll)
+
+  var totalTime = (Jog.findAllFromUser(req.cookie.userId)).map(jog => {
+      return jog.duration})
+            .reduce(addAll)
+
+  var avgSpeed = totalDistance / totalTime
+
 
   res.render('list-times.html', {
     user: loggedInUser,
