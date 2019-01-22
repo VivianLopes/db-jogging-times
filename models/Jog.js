@@ -5,36 +5,35 @@ var insertJog = db.prepare(
     'INSERT INTO jog (userId, startTime, date, distance, duration) VALUES (?, ?, ?, ?, ?)'
 )
 
-var selectUserById = db.prepare('SELECT * FROM user WHERE id = ?')
+var selectJogById = db.prepare('SELECT * FROM jog WHERE id = ?')
+var selectJogByUser = db.prepare('SELECT * FROM jog WHERE userId = ?')
 
-var selectUserByEmail = db.prepare('SELECT * FROM user WHERE email = ?')
-
-class User {
-    static insert(name, email, passwordHash) {
+class Jog {
+    static insert(userId, startTime, date, distance, duration) {
         // run the insert query
-        var info = insertUser.run(name, email, passwordHash)
+        var info = insertJog.run(userId, startTime, date, distance, duration)
 
         // check what the newly inserted row id is
-        var userId = info.lastInsertRowid
+        var jogId = info.lastInsertRowid
 
-        return userId
+        return jogId
     }
 
     static findById(id) {
-        var row = selectUserById.get(id)
+        var row = selectJogById.get(id)
 
         if (row) {
-            return new User(row)
+            return new Jog(row)
         } else {
             return null
         }
     }
 
-    static findByEmail(email) {
-        var row = selectUserByEmail.get(email)
+    static findByUser(userId) {
+        var row = selectJogByUser.get(userId)
 
         if (row) {
-            return new User(row)
+            return new Jog(row)
         } else {
             return null
         }
@@ -58,37 +57,17 @@ module.exports = Jog
 /*console.log(db)
 console.log(db.table)
 var selectJogAll = db.prepare('SELECT * FROM jog')
-var selectJogById = db.prepare('SELECT * FROM jog WHERE id = ?')
-var selectJogByUserId = db.prepare('SELECT * FROM jog WHERE userId = ?')
 var updateJogById = db.prepare('UPDATE jog SET date = ?, duration = ?, distance = ? WHERE id = ?;')
 
 var selectJogByDate = db.prepare('SELECT * FROM jog WHERE duration = ?')
 
-class Jog {
-  static insert(date, duration, distance, userId) {
-    // run the insert query
-    var info = insertJog.run(date, duration, distance, userId)
-
-    // check what the newly inserted row id is
-    var jogId = info.lastInsertRowid
-
-    return jogId
-  }
 
   static updateJogById(date, duration, distance, id) {
     // run the insert query
     updateJogById.run(date, duration, distance, id)
   }
 
-  static findById(id) {
-    var row = selectJogById.get(id)
 
-    if (row) {
-      return new Jog(row)
-    } else {
-      return null
-    }
-  }
 
   static findAll() {
     var allData = selectJogAll.all()
