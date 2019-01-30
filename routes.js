@@ -3,6 +3,7 @@ var bcrypt = require('bcryptjs')
 
 var User = require('./models/User')
 var Jog = require('./models/Jog')
+var Following = require('./models/Following')
 
 var routes = new express.Router()
 
@@ -22,6 +23,7 @@ routes.get('/', function(req, res) {
         res.redirect('/sign-in')
     }
 })
+
 
 // show the create account page
 routes.get('/create-account', function(req, res) {
@@ -98,19 +100,6 @@ routes.get('/delete-account', function(req, res){
     res.redirect('/sign-in')
 })
 
-
-
-// routes.get('/times/:id/delete', function(req, res) {
-//     var timeId = req.params.id
-//     console.log('delete time', timeId)
-//
-//     // TODO: delete the time ->DONE(?)
-//
-//     Jog.deleteTimeById(timeId)
-//
-//     res.redirect('/times')
-// })
-
 // list all jog times
 routes.get('/times', function(req, res) {
     var loggedInUser = User.findById(req.cookies.userId)
@@ -182,6 +171,26 @@ routes.post('/times/new', function(req, res) {
     res.redirect('/times')
 })
 
+
+
+//show start following page
+routes.get('/start-following', function(req, res){
+    var loggedInUser = User.findById(req.cookies.userId)
+    res.render('start-following.html', {
+        user: loggedInUser
+    })
+})
+//handle start following form
+routes.post('/start-following/new', function(req, res){
+    var form = req.body
+    console.log('start following', form)
+
+    var newFollowing = Following.insert(form.user, req.cookies.userId)
+
+    res.redirect('/times')
+
+})
+
 // show the edit time form for a specific time
 routes.get('/times/:id', function(req, res) {
     var timeId = req.params.id
@@ -189,6 +198,7 @@ routes.get('/times/:id', function(req, res) {
 
     // TODO: get the real time for this id from the db ->DONE(?)
     var jogs = Jog.findById(timeId)
+    var loggedInUser = User.findById(req.cookies.userId)
     var jogTime = {
         id: timeId,
         startTime: jogs.date,
@@ -197,7 +207,8 @@ routes.get('/times/:id', function(req, res) {
     }
 
     res.render('edit-time.html', {
-        time: jogTime
+        time: jogTime,
+        user: loggedInUser
     })
 })
 
