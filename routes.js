@@ -33,16 +33,7 @@ routes.post('/create-account', function(req, res) {
     var form = req.body
 
     // TODO: add some validation in here to check
-    //   function ValidateEmail(email)
-    //   {
-    //       if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(myForm.emailAddr.value))
-    //       {
-    //           return (true)
-    //       }
-    //       alert("Invalid email address")
-    //       return (false)
-    //   }
-
+    console.log('create user', form)
 
     // hash the password - we dont want to store it directly
     var passwordHash = bcrypt.hashSync(form.password, saltRounds)
@@ -71,7 +62,7 @@ routes.post('/sign-in', function(req, res) {
     // if the user exists...
     if (user) {
         console.log({ form, user })
-        if (bcrypt.compareSync(form.password, user.passwordHash)) {
+        if (bcrypt.compareSync(form.password, user.password_hash)) {
             // the hashes match! set the log in cookie
             res.cookie('userId', user.id)
             // redirect to main app:
@@ -106,33 +97,28 @@ routes.get('/times', function(req, res) {
     const addAll = (accumulator, currentValue) => accumulator + currentValue;
 
     // fake stats - TODO: get real stats from the database->DONE(?)
-     try {
-        var totalDistance = (Jog.findAllFromUser(req.cookies.userId)).map(jog => {
-            return jog.distance
-        })
-            .reduce(addAll)
+    var totalDistance = (Jog.findAllFromUser(req.cookies.userId)).map(jog => {
+        return jog.distance
+    })
+        .reduce(addAll, 0)
 
-        var totalTime = (Jog.findAllFromUser(req.cookie.userId)).map(jog => {
-            return jog.duration
-        })
-            .reduce(addAll)
+    var totalTime = (Jog.findAllFromUser(req.cookies.userId)).map(jog => {
+        return jog.duration
+    })
+        .reduce(addAll, 0)
 
-
-        var avgSpeed = totalDistance / totalTime
-    } catch (error) {
-        var totalDistance = 0
-        var totalTime = 0
-        var avgSpeed = 0
+    var avgSpeed = 0
+    if (totalDistance > 0 && totalTime > 0 ){
+        avgSpeed = totalDistance / totalTime
     }
+
 
     var allJogs = Jog.findAllFromUser(req.cookies.userId)
 
-    try {
-        allJogs.map(obj => {
-            obj.avgSpeed = obj.distance/obj.duration;
-            return obj;
-        })
-    }catch (error){ }
+    allJogs.map(obj => {
+        obj.avgSpeed = obj.distance/obj.duration;
+        return obj;
+    })
 
     res.render('list-times.html', {
         user: loggedInUser,
@@ -150,27 +136,6 @@ routes.get('/times', function(req, res) {
 })
 
 
-// var allJogData = Jog.findAllByUserID(req.cookies.userId)
-//
-// try {
-//     allJogData.map(obj => {
-//         obj.avgSpeed = obj.distance / obj.duration;
-//         return obj;
-//     })
-// } catch (error) { }
-//
-// res.render('list-times.html', {
-//     user: loggedInUser,
-//     stats: {
-//         totalDistance: totalDistance.toFixed(2),
-//         totalTime: totalTime.toFixed(2),
-//         avgSpeed: avgSpeed.toFixed(2)
-//     },
-//
-//     // show all times
-//     times: allJogData
-// })
-// })
 
 // show the create time form
 routes.get('/times/new', function(req, res) {
@@ -188,9 +153,10 @@ routes.post('/times/new', function(req, res) {
 
     console.log('create time', form)
 
-    // TODO: save the new time
+    // TODO: save the new time ->DONE(?)
 
-    var newJog = Jog.insert(form.start_time, form.date, form.distance, form.duration)
+    var newJog = Jog.insert(req.cookies.userId, form.startTime, form.distance, form.duration)
+
 
     res.redirect('/times')
 })
@@ -200,11 +166,11 @@ routes.get('/times/:id', function(req, res) {
     var timeId = req.params.id
     console.log('get time', timeId)
 
-    // TODO: get the real time for this id from the db
+    // TODO: get the real time for this id from the db ->DONE(?)
     var jogs = Jog.findById(timeId)
     var jogTime = {
         id: timeId,
-        startTime: formatDateForHTML('2018-11-4 15:17'),
+        startTime: jogs.date,
         duration: jogs.duration,
         distance: jogs.distance
     }
@@ -224,7 +190,9 @@ routes.post('/times/:id', function(req, res) {
         form: form
     })
 
-    // TODO: edit the time in the db
+    // TODO: edit the time in the db ->DONE(?)
+
+    Jog.updateJogById(form.startTime, form.distance, form.duration, timeId)
 
     res.redirect('/times')
 })
@@ -234,7 +202,9 @@ routes.get('/times/:id/delete', function(req, res) {
     var timeId = req.params.id
     console.log('delete time', timeId)
 
-    // TODO: delete the time
+    // TODO: delete the time ->DONE(?)
+
+    Jog.deleteTimeById(timeId)
 
     res.redirect('/times')
 })

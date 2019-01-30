@@ -10,9 +10,9 @@ var selectUserById = db.prepare('SELECT * FROM user WHERE id = ?')
 var selectUserByEmail = db.prepare('SELECT * FROM user WHERE email = ?')
 
 class User {
-  static insert(name, email, passwordHash) {
+  static insert(name, email, password_hash) {
     // run the insert query
-    var info = insertUser.run(name, email, passwordHash)
+    var info = insertUser.run(name, email, password_hash)
 
     // check what the newly inserted row id is
     var userId = info.lastInsertRowid
@@ -44,7 +44,7 @@ class User {
     this.id = databaseRow.id
     this.name = databaseRow.name
     this.email = databaseRow.email
-    this.passwordHash = databaseRow.password_hash
+    this.password_hash = databaseRow.password_hash
   }
 }
 
