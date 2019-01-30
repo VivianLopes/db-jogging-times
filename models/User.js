@@ -1,13 +1,10 @@
 var db = require('../database')
 
 // get the queries ready - note the ? placeholders
-var insertUser = db.prepare(
-  'INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)'
-)
-
+var insertUser = db.prepare('INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)')
 var selectUserById = db.prepare('SELECT * FROM user WHERE id = ?')
-
 var selectUserByEmail = db.prepare('SELECT * FROM user WHERE email = ?')
+var deleteAccountById = db.prepare('DELETE FROM user WHERE id = ?')
 
 class User {
   static insert(name, email, password_hash) {
@@ -18,6 +15,10 @@ class User {
     var userId = info.lastInsertRowid
 
     return userId
+  }
+
+  static deleteAccountById(id){
+    deleteAccountById.run(id)
   }
 
   static findById(id) {

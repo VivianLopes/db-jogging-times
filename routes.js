@@ -90,6 +90,27 @@ routes.get('/sign-out', function(req, res) {
     res.redirect('/sign-in')
 })
 
+//handle deleting account
+routes.get('/delete-account', function(req, res){
+    var accountId = req.cookies.userId
+    console.log('delete user', accountId)
+    User.deleteAccountById(accountId)
+    res.redirect('/sign-in')
+})
+
+
+
+// routes.get('/times/:id/delete', function(req, res) {
+//     var timeId = req.params.id
+//     console.log('delete time', timeId)
+//
+//     // TODO: delete the time ->DONE(?)
+//
+//     Jog.deleteTimeById(timeId)
+//
+//     res.redirect('/times')
+// })
+
 // list all jog times
 routes.get('/times', function(req, res) {
     var loggedInUser = User.findById(req.cookies.userId)
