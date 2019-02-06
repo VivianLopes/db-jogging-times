@@ -180,15 +180,20 @@ routes.get('/start-following', function(req, res){
         user: loggedInUser
     })
 })
+
+    //TODO: make sure you cannot follow multiple times(?)
 //handle start following form
 routes.post('/start-following/new', function(req, res){
     var form = req.body
     console.log('start following', form)
 
-    var newFollowing = Following.insert(form.user, req.cookies.userId)
+    var id = User.selectUserByName(form.user).id
+
+     //console.log("THIS USER HAS ID...", id)
+
+    var newFollowing = Following.insert(id, req.cookies.userId)
 
     res.redirect('/times')
-
 })
 
 // show the edit time form for a specific time

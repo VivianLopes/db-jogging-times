@@ -5,6 +5,7 @@ var insertUser = db.prepare('INSERT INTO user (name, email, password_hash) VALUE
 var selectUserById = db.prepare('SELECT * FROM user WHERE id = ?')
 var selectUserByEmail = db.prepare('SELECT * FROM user WHERE email = ?')
 var deleteAccountById = db.prepare('DELETE FROM user WHERE id = ?')
+var selectUserByName = db.prepare('SELECT name, id FROM user WHERE name = ?')
 
 class User {
   static insert(name, email, password_hash) {
@@ -19,6 +20,10 @@ class User {
 
   static deleteAccountById(id){
     deleteAccountById.run(id)
+  }
+
+  static selectUserByName(name){
+    return selectUserByName.get(name)
   }
 
   static findById(id) {
