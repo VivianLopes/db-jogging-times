@@ -176,12 +176,15 @@ routes.post('/times/new', function(req, res) {
 //show start following page
 routes.get('/start-following', function(req, res){
     var loggedInUser = User.findById(req.cookies.userId)
+
+    var allFollowees = Following.findAllFromUser(req.cookies.userId)
     res.render('start-following.html', {
-        user: loggedInUser
+        user: loggedInUser,
+        following: allFollowees
     })
 })
 
-    //TODO: make sure you cannot follow multiple times(?)
+    //TODO: make sure you cannot follow multiple times, what happens when two or more users have the same name(?)
 //handle start following form
 routes.post('/start-following/new', function(req, res){
     var form = req.body
@@ -193,7 +196,8 @@ routes.post('/start-following/new', function(req, res){
 
     var newFollowing = Following.insert(id, req.cookies.userId)
 
-    res.redirect('/times')
+
+    res.redirect('/start-following')
 })
 
 // show the edit time form for a specific time
